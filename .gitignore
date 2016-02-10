@@ -1,0 +1,17 @@
+/MANIFEST
+/MANIFEST.bak
+/META.*
+/MYMETA.*
+/Makefile
+/Makefile.old
+/README
+/blib/
+/pm_to_blib
+/Distar
+*~
+*#
+.#*
+/Test-WithTaint-*
+/cover_db/
+/MANIFEST.SKIP
+/pod2*.tmp

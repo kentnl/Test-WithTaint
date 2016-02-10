@@ -1,0 +1,42 @@
+---
+after_success:
+  - coverage-report
+before_install:
+  - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+  - source ~/travis-perl-helpers/init
+  - build-perl
+  - perl -V
+  - build-dist;
+  - cd $BUILD_DIR;
+before_script:
+  - coverage-setup
+env:
+  - AUTHOR_TESTING=0
+install:
+  - cpan-install --deps
+  - cpan-install --coverage
+language: perl
+matrix:
+  include:
+    - env: COVERAGE=1
+      perl: 5.22.0
+
+perl:
+  - 5.6.2
+  - 5.8.1
+  - 5.8.8
+  - 5.8.9
+  - 5.10.0
+  - 5.10.1
+  - 5.12.5
+  - 5.14.4
+  - 5.16.3
+  - 5.18.2
+  - 5.18.3
+  - 5.20.0
+  - 5.20.1
+  - dev
+script:
+  - perl Makefile.PL
+  - prove -lvr $(test-files)
+sudo: false
