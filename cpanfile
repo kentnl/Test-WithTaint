@@ -3,7 +3,8 @@ requires 'strict';
 requires 'warnings';
 
 on test => sub {
-    requires 'Test::More';
+    requires 'Test::More', '0.95_01';
+    requires 'overload';
     requires 'strict';
     requires 'warnings';
 };

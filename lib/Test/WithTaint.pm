@@ -4,9 +4,29 @@ use warnings;
 
 package Test::WithTaint;
 
-our $VERSION = '0.001000';
+our $VERSION   = '0.001000';
 our $AUTHORITY = 'cpan:KENTNL';
 
+sub import {
+    my ( $self, @args ) = @_;
+    if ( not @args ) {
+        return $self->_withtaint_self( [caller]->[1] );
+    }
+    if ( 2 == @args and '-exec' eq $args[0] ) {
+        return $self->_withtaint_other( $args[1] );
+    }
+    die 'Unrecognized arguments to import() [E<Test::WithTaint>0x01]';
+}
+
+sub _withtaint_self {
+    my ( undef, $file ) = @_;    ## no critic (Variables)
+    die 'Simple Self-Rexec not implemented [E<Test::WithTaint>0x02]';
+}
+
+sub _withtaint_other {
+    my ( undef, $file ) = @_;    ## no critic (Variables)
+    die 'Chain to other script unimplemented [E<Test::WithTaint>0x03]';
+}
 1;
 
 __END__
