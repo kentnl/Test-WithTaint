@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 my $target = './README.pod';
-my $source = './lib/Call/From.pm';
+my $source = './lib/Test/WithTaint.pm';
 
 require Pod::Perldoc::ToPod;
 my $parser = Pod::Perldoc::ToPod->new();
