@@ -24,8 +24,9 @@ on develop => sub {
     requires 'Perl::PrereqScanner';
     requires 'Pod::Coverage::TrustPod';
     requires 'Pod::Perldoc::ToPod';
+    requires 'Test::CPAN::Changes';
     requires 'Test::EOL';
-    requires 'Test::More', '0.88';
+    requires 'Test::More', '0.96';
     requires 'Test::Perl::Critic';
     requires 'Test::Pod', '1.41';
     requires 'Test::Pod::Coverage', '1.08';
