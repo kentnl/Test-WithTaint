@@ -10,18 +10,6 @@ Test::WithTaint - Ensure a Test is run reliably with taint
   # execute a different script with tainting
   use Test::WithTaint -exec => 't/foo.t'
 
-  # manual mode
-  use Test::WithTaint qw( taint_supported taint_enabled exec_tainted )
-  use Test::More;
-  if ( not taint_supported ) {
-    plan skip_all => "Taint not supported";
-    exit 0;
-  }
-  if ( not taint_enabled ) {
-    exec_tainted($0);
-  }
-  # code to exec under taint here
-
 =head1 DESCRIPTION
 
 This module aims to facilitate taint testing in several ways.
@@ -77,48 +65,6 @@ This:
 =item * Cleans up the environment, and Forcefully invokes the test passed to C<-exec> with C<exec>;
 
 =back
-
-=head2 Manual Mode
-
-In the event either combination of the above are unsuitable, you can C<import> the tools
-and use them yourself.
-
-Invoking C<< Test::WithTaint->import() >> with arguments other than:
-
-  ()
-  ('-exec', $filename)
-
-Will disable the default mechanics and regress to a pure importer.
-
-=head1 EXPORTS
-
-=head2 C<taint_supported>
-
-This function determines if your Perl supports C<taint>.
-
-Presently, all Perl versions support C<taint>, and so the future-proof mechanism
-to see if Perl supports taint entails invoking a small test script under taint mode and seeing if it fails.
-
-In the event that some 3rd party patch is applied that inhibits C<taint>, or the C<%ENV> scrubbing
-technique is not sufficient to make C<taint> work, this test will fail and return C<undef>,
-indicating that the other exports in this module cannot be expected to work.
-
-=head2 C<taint_enabled>
-
-This function determines if your Perl is currently running in C<taint> mode.
-
-On Perls newer than Perl v5.8.0, this checks C<${^TAINT}> and returns C<1>
-if C<${^TAINT}> is C<1>, and returns C<undef> otherwise.
-
-On Perls older than Perl v5.8.0, a simple bit of code that should cause an exception
-is executed, and returns C<1> if the exception occurred, and returns C<undef> otherwise.
-
-=head2 C<exec_tainted>
-
-This function allows passing control (via C<exec>) to an arbitrary Perl Script described by a relative path.
-
-The function will clean up C<%ENV> in some small ways to encourage it to give the desired result before
-invoking C<$^X -T $relpath> ( Or some logical equivalent with platform specific protections as necessary.
 
 =head1 AUTHOR
 
