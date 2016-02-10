@@ -22,7 +22,9 @@ on develop => sub {
     requires 'PIR';
     requires 'Path::Tiny';
     requires 'Perl::PrereqScanner';
+    requires 'Pod::Coverage::TrustPod';
     requires 'Pod::Perldoc::ToPod';
+    requires 'Test::Pod::Coverage', '1.08';
     requires 'base';
     requires 'lib';
     requires 'perl', '5.006';
