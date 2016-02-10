@@ -56,6 +56,7 @@ my %META = (
                 'Pod::Perldoc::ToPod'     => 0,
                 'Test::CPAN::Changes'     => 0,
                 'Test::EOL'               => 0,
+                'Test::Kwalitee'          => '1.21',
                 'Test::More'              => '0.96',
                 'Test::Perl::Critic'      => 0,
                 'Test::Pod'               => '1.41',
