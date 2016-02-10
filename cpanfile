@@ -26,6 +26,7 @@ on develop => sub {
     requires 'Pod::Perldoc::ToPod';
     requires 'Test::EOL';
     requires 'Test::More', '0.88';
+    requires 'Test::Perl::Critic';
     requires 'Test::Pod', '1.41';
     requires 'Test::Pod::Coverage', '1.08';
     requires 'base';

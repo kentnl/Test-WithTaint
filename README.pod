@@ -31,12 +31,12 @@ This module aims to facilitate taint testing in several ways.
 =head2 Simple Mode
 
 This mode is the most recommended usage, and it adds a layer of safety
-that is too hard to acheive with a hashbang trick.
+that is too hard to achieve with a hash-bang trick.
 
   # inside foo.t
   use Test::WithTaint;
 
-Here, the default behaviour is to:
+Here, the default behavior is to:
 
 =over 4
 
