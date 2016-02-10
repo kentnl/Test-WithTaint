@@ -18,7 +18,11 @@ my %META = (
         },
         build => { requires => {} },
         test  => {
-            requires => {}
+            requires => {
+                'Test::More' => 0,
+                'strict'     => 0,
+                'warnings'   => 0,
+            }
         },
         runtime => {
             requires => {
