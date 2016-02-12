@@ -42,7 +42,7 @@ $bundle->remove_policy('ValuesAndExpressions::RequireInterpolationOfMetachars');
 $bundle->remove_policy('Variables::ProhibitPackageVars');
 $bundle->remove_policy('RegularExpressions::RequireDotMatchAnything');
 $bundle->remove_policy('RegularExpressions::RequireExtendedFormatting');
-
+$bundle->remove_policy('Subroutines::RequireFinalReturn');
 
 #$bundle->remove_policy('NamingConventions::Capitalization');
 
