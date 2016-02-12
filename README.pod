@@ -1,6 +1,6 @@
 =begin Pod::Coverage
 
-detaint perl_path taint_supported
+taint_supported
 
 =end Pod::Coverage
 

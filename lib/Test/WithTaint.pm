@@ -32,7 +32,7 @@ sub _withtaint_other {
 
 =begin Pod::Coverage
 
-detaint perl_path taint_supported
+taint_supported
 
 =end Pod::Coverage
 
@@ -66,15 +66,15 @@ sub taint_supported {
 #   as the outer eval should not fail
 # - Under a perl where -T causes an error, exit should be a value other than 42
     system(
-        detaint( perl_path() ) => $_TAINT_FLAG,
+        _detaint( _perl_path() ) => $_TAINT_FLAG,
         '-e' => q[eval{eval q[#] . substr $0,0,0;exit 1};exit 42],
     );
     my $exit = $? >> 8;
     return ( $_TAINT_SUPPORTED = ( 42 == $exit ) );
 }
 
-sub perl_path { $^X }
-sub detaint   { $_[0] =~ /\A(.*)\z/ }
+sub _perl_path { $^X }
+sub _detaint   { $_[0] =~ /\A(.*)\z/ }
 1;
 
 __END__
