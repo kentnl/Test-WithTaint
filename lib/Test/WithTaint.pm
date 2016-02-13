@@ -41,15 +41,17 @@ taint_supported
 # This variable is only visible externally for testing purposes
 # but otherwise exists to cache the call because throwing system()
 # around hurts.
-our $_TAINT_SUPPORTED;
+$Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED =
+  $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED;    # Ensure the glob exists
 
 # Note: This is for testing purposes only.
 #       so that we can turn it off to emulate a
 #       Perl where -T has no effect.
-our $_TAINT_FLAG = '-T';
+$Test::WithTaint::_INTERNAL_::TAINT_FLAG ||= '-T';
 
 sub taint_supported {
-    return $_TAINT_SUPPORTED if defined $_TAINT_SUPPORTED;
+    return $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED
+      if defined $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED;
 
 # Note: Taint applies at the expression level, so any statement invoking sensitive
 # function calls which also has a tainted value in it will fail
@@ -66,11 +68,11 @@ sub taint_supported {
 #   as the outer eval should not fail
 # - Under a perl where -T causes an error, exit should be a value other than 42
     system(
-        _detaint( _perl_path() ) => $_TAINT_FLAG,
+        _detaint( _perl_path() ) => $Test::WithTaint::_INTERNAL_::TAINT_FLAG,
         '-e' => q[eval{eval q[#] . substr $0,0,0;exit 1};exit 42],
     );
     my $exit = $? >> 8;
-    return ( $_TAINT_SUPPORTED = ( 42 == $exit ) );
+    return ( $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED = ( 42 == $exit ) );
 }
 
 sub _perl_path { $^X }

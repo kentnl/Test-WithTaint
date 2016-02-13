@@ -62,11 +62,11 @@ my $full_diag;
 }
 {
     local $@;
-    local $Test::WithTaint::_TAINT_SUPPORTED = undef;
+    local $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED = undef;
 
   # This replaacement for '-T' intends to mimic a perl where '-T' ceases to have
   # any effect and silently runs perl without tainting
-    local $Test::WithTaint::_TAINT_FLAG = '-Mstrict';
+    local $Test::WithTaint::_INTERNAL_::TAINT_FLAG = '-Mstrict';
     my $supported;
     eval { $supported = Test::WithTaint::taint_supported(); };
     ok( !$@, "No exceptions were thrown from checking taint support" ) or do {
@@ -76,11 +76,11 @@ my $full_diag;
 }
 {
     local $@;
-    local $Test::WithTaint::_TAINT_SUPPORTED = undef;
+    local $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED = undef;
 
     # This replacement for '-T' intends to mimic a perl where '-T' is causes
     # perl to exit with an error condition
-    local $Test::WithTaint::_TAINT_FLAG = '-Mstrict;exit(1)';
+    local $Test::WithTaint::_INTERNAL_::TAINT_FLAG = '-Mstrict;exit(1)';
     my $supported;
     eval { $supported = Test::WithTaint::taint_supported(); };
     ok( !$@, "No exceptions were thrown from checking taint support" ) or do {
