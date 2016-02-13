@@ -4,6 +4,7 @@ requires 'warnings';
 
 on test => sub {
     requires 'Config';
+    requires 'Test::Builder', '0.95_01';
     requires 'Test::More', '0.95_01';
     requires 'strict';
     requires 'warnings';

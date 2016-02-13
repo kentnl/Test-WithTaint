@@ -12,57 +12,9 @@ use Test::More 0.95_01;    # subtest imply done_testing
 BEGIN {
     local @INC = ( 't/lib', @INC );
     require KENTNL::Catcher;
+    require KENTNL::GuardTest;
     KENTNL::Catcher->import();
-}
-
-# This does a whole bunch of handy shit:
-#
-# gsubtest name => sub { return $guardval => $checking_sub };
-# Then "checking_sub" is executed in a subtest.
-# And if it fails or bails, guardval is reported in the failure along with the error
-# and all the tests that happened in the subtest which are defacto hidden in CPAN smokers.
-#
-# g = guarded/generative
-sub gsubtest {
-    my ( $name, $generator ) = @_;
-    my $errored = 1;
-    my $guardval;
-    my $error;
-    my (@details);
-    subtest $name => sub {
-        local $@;
-        my $tb = Test::Builder->new();
-        my $ret;
-        my ($code);
-        eval {
-            ( $guardval, $code ) = $generator->();
-            local $_ = $guardval;
-            $ret     = $code->();
-            $errored = 0;
-        };
-        $error   = $@;
-        $errored = 1 if not $tb->is_passing;
-        @details = $tb->details;
-        return $ret;
-    };
-    if ($errored) {
-        if ($error) {
-            diag "===[Error]==";
-            diag explain $error;
-        }
-        diag "==[GuardVal]==";
-        diag explain $guardval;
-        diag "==[Subtest History]==";
-        my $tb = Test::Builder->new();
-        my $i  = 0;
-        for my $detail (@details) {
-            my $brand = $detail->{actual_ok} ? "ok" : "no";
-            $brand .= ':.' . $detail->{type} if $detail->{type};
-            my $label = $detail->{name};
-            $label .= " => " . $detail->{reason} if $detail->{reason};
-            diag sprintf "%s=%s : %s", $i++, $brand, $label;
-        }
-    }
+    KENTNL::GuardTest->import();
 }
 
 our @EX_ARGS;
@@ -82,7 +34,7 @@ BEGIN {
 }
 
 # Test
-gsubtest "self-dispatch" => sub {
+guarded "self-dispatch" => sub {
     local @EX_ARGS;
     my $e = catch { Test::WithTaint->import() };
     my @args = @EX_ARGS;
@@ -94,7 +46,7 @@ gsubtest "self-dispatch" => sub {
     };
 };
 
-gsubtest "external-dispatch" => sub {
+guarded "external-dispatch" => sub {
     local @EX_ARGS;
     my $e = catch { Test::WithTaint->import( -exec => 't/idontexist.t' ) };
     my @args = @EX_ARGS;
@@ -107,7 +59,7 @@ gsubtest "external-dispatch" => sub {
     };
 };
 
-gsubtest "external-dispatch+excess arguments" => sub {
+guarded "external-dispatch+excess arguments" => sub {
     my $e = catch {
         Test::WithTaint->import( -exec => 't/idontexist.t', 'extra' )
     };
@@ -117,7 +69,7 @@ gsubtest "external-dispatch+excess arguments" => sub {
     };
 };
 
-gsubtest "external-dispatch+missing_file" => sub {
+guarded "external-dispatch+missing_file" => sub {
     my $e = catch { Test::WithTaint->import('-exec') };
     return $e => sub {
         ok( !$_->ok, "Exception triggered" );
@@ -125,7 +77,7 @@ gsubtest "external-dispatch+missing_file" => sub {
     };
 };
 
-gsubtest "bad arguments" => sub {
+guarded "bad arguments" => sub {
     my $e = catch { Test::WithTaint->import('bad argument') };
     return $e => sub {
         ok( !$_->ok, "Exception triggered" );
@@ -133,7 +85,7 @@ gsubtest "bad arguments" => sub {
     };
 };
 
-gsubtest "two bad arguments" => sub {
+guarded "two bad arguments" => sub {
     my $e = catch {
         Test::WithTaint->import( 'bad argument', 'bad argument' )
     };

@@ -19,10 +19,11 @@ my %META = (
         build => { requires => {} },
         test  => {
             requires => {
-                'Config'     => 0,
-                'Test::More' => '0.95_01',
-                'strict'     => 0,
-                'warnings'   => 0,
+                'Config'        => 0,
+                'Test::Builder' => '0.95_01',
+                'Test::More'    => '0.95_01',
+                'strict'        => 0,
+                'warnings'      => 0,
             }
         },
         runtime => {
