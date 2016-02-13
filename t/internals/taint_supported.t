@@ -101,9 +101,7 @@ if ($full_diag) {
         diag "** Please inform the author of Test::WithTaint    **";
         diag "** so this test can produce the right results     **";
         diag "**                                                **";
-        sleep 1;
         diag "****************************************************\x07";
-        sleep 2;
     }
     else {
         diag "\n**** Your Perl Unexpectedly Supports Taint ----*****\x07";
@@ -116,10 +114,26 @@ if ($full_diag) {
         diag "** Please inform the author of Test::WithTaint    **";
         diag "** so this test can produce the right results     **";
         diag "**                                                **";
-        sleep 1;
         diag "****************************************************\x07";
-        sleep 2;
     }
+    maybe_sleep(10);
+}
+
+sub maybe_sleep {
+    my ($size) = @_;
+
+    # in order to do the pause thing:
+    # - users must be able to give input in their terminal
+    return unless -t STDIN;
+
+    # - users must have a terminal for stdout
+    # and -p must be supported for "prove"
+    return unless ( -t STDOUT || -p STDOUT );
+
+    # Note: Other implementations sleep in other conditions... for some reason.
+    # we still print regardless, but we don't sleep, so who cares.
+    diag "[ Sleeping for $size Seconds ]";
+    return sleep $size;
 }
 
 done_testing;
