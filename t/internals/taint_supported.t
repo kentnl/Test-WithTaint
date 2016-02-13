@@ -26,8 +26,8 @@ if ( $] >= 5.017010 ) {
     our %Config;
     require Config;
     Config->import('%Config');
-    if (
-        $Config{ccflags} =~ /(?:\A|\s)(-D(SILENT_)?NO_TAINT_SUPPORT)(?:\s|\z)/ )
+    if ( $Config{ccflags} =~
+        /(?:\A|\s)(-D(?:SILENT_)?NO_TAINT_SUPPORT)(?:\s|\z)/ )
     {
         $support_expected = 0;
         diag "Testing on perl $] with $1";
