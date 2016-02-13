@@ -91,7 +91,7 @@ my $full_diag;
 
 if ($full_diag) {
     if ($support_expected) {
-        diag "**** Your Perl Does not Support Taint ---------*****\x07";
+        diag "\n**** Your Perl Does not Support Taint ---------*****\x07";
         diag "**                                                **";
         diag "** Our analysis of your Perl install indicated    **";
         diag "** that Taint Support *should* work, but our      **";
@@ -106,7 +106,7 @@ if ($full_diag) {
         sleep 2;
     }
     else {
-        diag "**** Your Perl Unexpectedly Supports Taint ----*****\x07";
+        diag "\n**** Your Perl Unexpectedly Supports Taint ----*****\x07";
         diag "**                                                **";
         diag "** Our analysis of your Perl install indicated    **";
         diag "** that Taint Support *shouldn't* work, but our   **";
