@@ -26,10 +26,7 @@ sub _withtaint_self {
         return;
     }
 
-    if ( taint_supported() ) {
-        exec {$^X} $^X, '-Ilib', '-T', $file;
-        die "Could not exec $file [E<Test::WithTaint>0x07]";
-    }
+    _exec_tainted($file) if taint_supported();
 
     return _exit_skipall(
         'Taint Support required for this test [W<Test::WithTaint>0x04]');
@@ -47,14 +44,17 @@ sub _withtaint_other {
         return;
     }
 
-    if ( taint_supported() ) {
-        exec {$^X} $^X, '-Ilib', '-T', $file;
-        die "Could not exec $file [E<Test::WithTaint>0x08]: $!";
-    }
+    _exec_tainted($file) if taint_supported();
 
     return _exit_skipall(
         'Taint Support required for this test [W<Test::WithTaint>0x05]');
 
+}
+
+sub _exec_tainted {
+    my ($file) = @_;
+    exec {$^X} $^X, '-Ilib', '-T', $file;
+    die "Could not exec $file [E<Test::WithTaint>0x06]: $!";
 }
 
 # these are not documented externally on purpose
