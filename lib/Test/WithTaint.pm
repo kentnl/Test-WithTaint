@@ -105,6 +105,12 @@ sub taint_enabled {
 
 }
 
+# Note: this code is intended to run without loading Test::More
+sub _exit_skipall {
+    print {*STDOUT} "1..0 # Skipped: $_[0]"
+      or die "Error writing to STDOUT, $!";
+    exit 0;
+}
 sub _perl_path { $^X }
 sub _detaint   { $_[0] =~ /\A(.*)\z/ }
 1;
