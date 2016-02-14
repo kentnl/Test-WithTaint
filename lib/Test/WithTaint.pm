@@ -32,7 +32,7 @@ sub _withtaint_other {
 
 =begin Pod::Coverage
 
-taint_supported
+taint_supported taint_enabled
 
 =end Pod::Coverage
 
@@ -73,6 +73,26 @@ sub taint_supported {
     );
     my $exit = $? >> 8;
     return ( $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED = ( 42 == $exit ) );
+}
+
+my $taint_enabled;
+
+sub taint_enabled {
+    return $taint_enabled if defined $taint_enabled;
+
+    # Note: TAINT is a tristate, -1 is -t , so we only indicate 1 if its 1
+    # and 0 otherwise. "Taint warnings" are not interesting to us.
+    return ( $taint_enabled = ( 1 == ${^TAINT} ) ) if $] >= 5.008000;
+
+    local $@ = undef;
+    ## no critic (ErrorHandling::RequireCheckingReturnValueOfEval)
+    eval {
+        $taint_enabled = 1;
+        eval q[#] . substr $0, 0, 0;
+        $taint_enabled = ( !1 );
+    };
+    return $taint_enabled;
+
 }
 
 sub _perl_path { $^X }

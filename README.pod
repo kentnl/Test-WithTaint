@@ -1,6 +1,6 @@
 =begin Pod::Coverage
 
-taint_supported
+taint_supported taint_enabled
 
 =end Pod::Coverage
 
