@@ -43,11 +43,11 @@ my $prereqr = KENTNL::Prereqr->new(
         },
         {
             rule     => PIR->new->perl_file->not($ignore),
-            start_in => [ 'maint', 'Distar','xt' ],
-            deps_to  => [ 'develop', 'requires'],
+            start_in => [ 'maint', 'Distar', 'xt' ],
+            deps_to => [ 'develop', 'requires' ],
         },
         {
-            rule => PIR->new->perl_module->not($ignore),
+            rule        => PIR->new->perl_module->not($ignore),
             start_in    => [ 'maint', 'Distar', 'xt' ],
             provides_to => ['develop'],
         },

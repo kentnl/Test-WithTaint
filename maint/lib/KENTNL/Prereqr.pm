@@ -50,6 +50,7 @@ sub _add_provides {
     my ( $self, $path, $target, $stage, $provides ) = @_;
     for my $provide ( keys %{$provides} ) {
         next if $self->_is_provide_blacklisted($path, $provide);
+        carp("$path <= $provide @ $stage");
         $target->{$stage}->{$provide} = $provides->{$provide};
     }
 }
@@ -75,8 +76,9 @@ sub _run_rule {
         my $iter = $rule->{rule}->iter($in_dir);
         while ( my $entry = $iter->() ) {
             if ( $rule->{deps_to} ) {
-                $self->_add_requirements( $requires, $rule->{deps_to},
-                    $self->scanner->scan_file($entry) );
+                my $result = $self->scanner->scan_file($entry);
+                carp("$entry => $_ \@ @{[ join q[.], @{$rule->{deps_to}} ]}") for keys %{ $result->{requirements} };
+                $self->_add_requirements( $requires, $rule->{deps_to}, $result );
             }
             if ( $rule->{provides_to} ) {
                 my $provided = $self->_get_provide($entry);
