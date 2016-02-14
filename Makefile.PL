@@ -27,9 +27,12 @@ my %META = (
         },
         runtime => {
             requires => {
-                'perl'     => '5.006',
-                'strict'   => '0',
-                'warnings' => '0',
+                'Config'     => 0,
+                'File::Spec' => 0,
+                'lib'        => 0,
+                'perl'       => '5.006',
+                'strict'     => '0',
+                'warnings'   => '0',
             }
         },
         develop => {

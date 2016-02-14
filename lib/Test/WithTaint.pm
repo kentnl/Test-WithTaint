@@ -20,7 +20,12 @@ sub import {
 
 sub _withtaint {
     my ( undef, $file, $caller ) = @_;
-    return if taint_enabled() and $file eq $caller;
+
+    if ( taint_enabled() and $file eq $caller ) {
+        require lib;
+        lib->import( _libdirs() );
+        return;
+    }
 
     _exec_tainted($file) if taint_supported();
 
@@ -31,8 +36,40 @@ sub _withtaint {
 
 sub _exec_tainted {
     my ($file) = @_;
-    exec {$^X} $^X, '-Ilib', '-T', $file;
+    local $ENV{PATH} = _cleanpath();
+    my $perl = _cleanperl();
+    exec {$perl} $perl, '-Ilib', '-T', $file;
     die "Could not exec $file [E<Test::WithTaint>0x03]: $!";
+}
+
+sub _cleanperl {
+    require File::Spec;
+    my $path = File::Spec->rel2abs($^X);
+    return ( $path =~ /\A(.+)\z/ )[0];    # detainting;
+}
+
+sub _cleanpath {
+    return q[] unless defined $ENV{PATH} and length $ENV{PATH};
+    require File::Spec;
+    require Config;
+    my $sep = quotemeta( $Config::Config{path_sep} );
+    return (
+        join(
+            $Config::Config{path_sep},
+            map { (length) ? File::Spec->rel2abs($_) : () } split /$sep/,
+            $ENV{PATH},
+        ) =~ /\A(.+)\z/
+    )[0];    # DETAINTING
+}
+
+sub _libdirs {
+    my @sources = ( grep { defined and length } $ENV{PERL5LIB}, $ENV{PERLLIB} );
+    return () unless @sources;
+    require Config;
+    my $sep = quotemeta( $Config::Config{path_sep} );
+    ## no critic (BuiltinFunctions::RequireBlockGrep)
+    return grep length,
+      map { split /$sep/, (/\A(.*)\z/)[0] } @sources;    # DETAINTING
 }
 
 # these are not documented externally on purpose
@@ -74,8 +111,11 @@ sub taint_supported {
 # - Under a perl where Taint is silently disabled, exit should be 1
 #   as the outer eval should not fail
 # - Under a perl where -T causes an error, exit should be a value other than 42
-    system( $^X => $Test::WithTaint::_INTERNAL_::TAINT_FLAG,
-        '-e' => q[eval{eval q[#] . substr $0,0,0;exit 1};exit 42],
+
+    local $ENV{PATH} = _cleanpath();
+    system(
+        _cleanperl() => $Test::WithTaint::_INTERNAL_::TAINT_FLAG,
+        '-e'         => q[eval{eval q[#] . substr $0,0,0;exit 1};exit 42],
     );
     my $exit = $? >> 8;
     return ( $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED = ( 42 == $exit ) );

@@ -49,8 +49,8 @@ undef $@;
 undef $file;
 local $Test::WithTaint::_INTERNAL_::TAINT_ENABLED = 1;
 eval { Test::WithTaint->import() };
-ok( !$@,    "No exception, pass through" );
-ok( !$file, "No file becuse exec not called" );
+ok( !$@,    "No exception, pass through" ) or diag $@;
+ok( !$file, "No file becuse exec not called" ) or diag $file;
 
 undef $@;
 undef $file;
@@ -65,7 +65,7 @@ local $Test::WithTaint::_INTERNAL_::TAINT_ENABLED   = "";
 local $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED = "";
 eval { Test::WithTaint->import() };
 like( $@, qr/Would Skip/, "Taint unsupported should skip" );
-ok( !$file, "skipchk: No file because exec not called" );
+ok( !$file, "skipchk: No file because exec not called" ) or diag $@;
 
 undef $@;
 undef $file;
@@ -73,7 +73,7 @@ local $Test::WithTaint::_INTERNAL_::TAINT_ENABLED   = "";
 local $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED = "";
 eval { Test::WithTaint->import( -exec => 'file.t' ) };
 like( $@, qr/Would Skip/, "Taint unsupported should skip w/ -exec" );
-ok( !$file, "skipchk: No file because exec not called w/ -exec" );
+ok( !$file, "skipchk: No file because exec not called w/ -exec" ) or diag $file;
 
 done_testing;
 

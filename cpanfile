@@ -1,3 +1,6 @@
+requires 'Config';
+requires 'File::Spec';
+requires 'lib';
 requires 'perl', '5.006';
 requires 'strict';
 requires 'warnings';
