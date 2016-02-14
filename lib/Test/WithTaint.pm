@@ -13,19 +13,48 @@ sub import {
         return $self->_withtaint_self( [caller]->[1] );
     }
     if ( 2 == @args and '-exec' eq $args[0] ) {
-        return $self->_withtaint_other( $args[1] );
+        return $self->_withtaint_other( $args[1], [caller]->[1] );
     }
     die 'Unrecognized arguments to import() [E<Test::WithTaint>0x01]';
 }
 
 sub _withtaint_self {
     my ( undef, $file ) = @_;    ## no critic (Variables)
-    die 'Simple Self-Rexec not implemented [E<Test::WithTaint>0x02]';
+
+    # We're after the re-spawn so noop.
+    if ( taint_enabled() ) {
+        return;
+    }
+
+    if ( taint_supported() ) {
+        exec {$^X} $^X, '-Ilib', '-T', $file;
+        die "Could not exec $file [E<Test::WithTaint>0x07]";
+    }
+
+    return _exit_skipall(
+        'Taint Support required for this test [W<Test::WithTaint>0x04]');
 }
 
 sub _withtaint_other {
-    my ( undef, $file ) = @_;    ## no critic (Variables)
-    die 'Chain to other script unimplemented [E<Test::WithTaint>0x03]';
+    my ( undef, $file, $caller ) = @_;    ## no critic (Variables)
+
+    # -exec => $0 gives the wrong results
+    #             because no code is expected to run after an -exec =>
+    if ( taint_enabled() and $file eq $caller ) {
+        warn 'Circular -exec found, assuming continuation expected'
+          . ' [W<Test::WithTaint>0x06]';
+
+        return;
+    }
+
+    if ( taint_supported() ) {
+        exec {$^X} $^X, '-Ilib', '-T', $file;
+        die "Could not exec $file [E<Test::WithTaint>0x08]: $!";
+    }
+
+    return _exit_skipall(
+        'Taint Support required for this test [W<Test::WithTaint>0x05]');
+
 }
 
 # these are not documented externally on purpose
