@@ -94,7 +94,7 @@ sub collect {
     return @{
         $_[0]->{collected} ||= do {
             require CPAN::Meta::Prereqs;
-            my $reqs     = CPAN::Meta::Prereqs->new();
+            my $reqs     = KENTNL::Prereqr::CMP->new();
             my $provides = {};
             for my $rule ( @{ $_[0]->rules } ) {
                 $_[0]->_run_rule( $rule, $reqs, $provides );
@@ -105,22 +105,41 @@ sub collect {
 }
 
 sub prereqs {
-  return ( $_[0]->{prereqs} ||= do {
-      my ( $reqs, $provides ) = $_[0]->collect;
-      
-      $reqs = $reqs->clone;
-      for my $phase ( keys %{ $provides } ) {
-        for my $rel ( qw( requires recommends suggests )  ) {
-          my $preqs = $reqs->requirements_for( $phase, $rel );
-          for my $module ( keys %{$provides->{$phase}} ) {
-            if ( $preqs->accepts_module( $module,$provides->{$phase}->{$module}->{version} ) ) {
-              $preqs->clear_requirement( $module );
+    return (
+        $_[0]->{prereqs} ||= do {
+            my ( $reqs, $provides ) = $_[0]->collect;
+
+            $reqs = $reqs->clone;
+            for my $phase ( keys %{$provides} ) {
+                for my $rel (qw( requires recommends suggests )) {
+                    my $preqs = $reqs->requirements_for( $phase, $rel );
+                    for my $module ( keys %{ $provides->{$phase} } ) {
+                        if ( $preqs->accepts_module( $module, $provides->{$phase}->{$module}->{version} ) ) {
+                            $preqs->clear_requirement($module);
+                        }
+                    }
+                }
             }
+            for my $phase (qw( authortest releasetest smoketest )) {
+                for my $rel (qw( requires recommends suggests )) {
+                    my $target_prereqs = $reqs->requirements_for( 'develop', $rel );
+                    my $source_prereqs = $reqs->requirements_for( $phase,    $rel );
+                    $target_prereqs->add_requirements($source_prereqs);
+                }
+            }
+            return $reqs;
           }
-        }
-      }
-      return $reqs;
-  });
+    );
+}
+
+package KENTNL::Prereqr::CMP;
+our @ISA = ('CPAN::Meta::Prereqs');
+
+sub __legal_phases {
+    my ( $self, @args ) = @_;
+    my (@ret) = ( $self->SUPER::__legal_phases(@args) );
+    push @ret, 'authortest', 'releasetest', 'smoketest';
+    @ret;
 }
 
 1;

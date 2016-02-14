@@ -14,55 +14,73 @@ use KENTNL::Prereqr;
 
 my $ignore = PIR->new->name('perlcritic.rc.gen.pl');
 
-my $prereqr = KENTNL::Prereqr->new(
-    rules => [
-        {
-            rule     => PIR->new->max_depth(1)->perl_file->name('Makefile.PL'),
-            start_in => [''],
-            deps_to  => [ 'configure', 'requires' ],
-        },
-        {
-            rule     => PIR->new->perl_file,
-            start_in => ['inc'],
-            deps_to  => [ 'configure', 'requires' ],
-        },
-        {
-            rule        => PIR->new->perl_module,
-            start_in    => ['inc'],
-            provides_to => ['configure'],
-        },
-        {
-            rule     => PIR->new->perl_file,
-            start_in => ['lib'],
-            deps_to  => [ 'runtime', 'requires' ],
-        },
-        {
-            rule        => PIR->new->perl_module,
-            start_in    => ['lib'],
-            provides_to => [ 'runtime', 'test' ],
-        },
-        {
-            rule     => PIR->new->perl_file->not($ignore),
-            start_in => [ 'maint', 'Distar', 'xt' ],
-            deps_to => [ 'develop', 'requires' ],
-        },
-        {
-            rule        => PIR->new->perl_module->not($ignore),
-            start_in    => [ 'maint', 'Distar', 'xt' ],
-            provides_to => ['develop'],
-        },
-        {
-            rule     => PIR->new->perl_file,
-            start_in => ['t'],
-            deps_to  => [ 'test', 'requires' ],
-        },
-        {
-            rule        => PIR->new->perl_module,
-            start_in    => ['t'],
-            provides_to => [ 'test', 'develop' ],
-        }
-    ]
+my %rules = (
+    'Makefile.PL' => PIR->new->max_depth(1)->perl_file->name('Makefile.PL'),
+    'perl_file'   => PIR->new->perl_file->not($ignore),
+    'perl_module' => PIR->new->perl_module->not($ignore),
 );
+
+my %paths = (
+    '' => {
+        'Makefile.PL' => { deps_to => [ 'configure', 'requires' ] }
+    },
+    'inc' => {
+        'perl_file'   => { deps_to     => [ 'configure', 'requires' ] },
+        'perl_module' => { provides_to => ['configure'] },
+    },
+    'lib' => {
+        perl_file   => { deps_to => [ 'runtime', 'requires' ] },
+        perl_module => {
+            provides_to =>
+              [ 'runtime', 'test', 'authortest', 'releasetest', 'smoketest' ]
+        },
+    },
+    'maint' => {
+        perl_file   => { deps_to     => [ 'develop', 'requires' ] },
+        perl_module => { provides_to => ['develop'] },
+    },
+    'Distar' => {
+        perl_file   => { deps_to     => [ 'develop', 'requires' ] },
+        perl_module => { provides_to => ['develop'] },
+    },
+    'xt/author' => {
+        perl_file => {
+            deps_to     => [ 'authortest', 'requires' ],
+            provides_to => ['authortest']
+        },
+    },
+    'xt/release' => {
+        perl_file => {
+            deps_to     => [ 'releasetest', 'requires' ],
+            provides_to => ['releasetest']
+        },
+    },
+    'xt/smoke' => {
+        perl_file => {
+            deps_to     => [ 'smoketest', 'requires' ],
+            provides_to => ['smoketest']
+        },
+    },
+    't' => {
+        perl_file   => { deps_to => [ 'test', 'requires' ] },
+        perl_module => {
+            provides_to => [ 'test', 'authortest', 'releasetest', 'smoketest' ]
+        },
+    },
+);
+
+my $crules = [];
+for my $path ( keys %paths ) {
+    for my $rule ( keys %{ $paths{$path} } ) {
+        push @{$crules},
+          {
+            rule     => $rules{$rule},
+            start_in => [$path],
+            %{ $paths{$path}{$rule} },
+          };
+    }
+}
+my $prereqr = KENTNL::Prereqr->new( rules => $crules );
 
 my ( $prereqs, $provided ) = $prereqr->collect;
 
