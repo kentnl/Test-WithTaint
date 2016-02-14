@@ -75,23 +75,33 @@ sub taint_supported {
     return ( $Test::WithTaint::_INTERNAL_::TAINT_SUPPORTED = ( 42 == $exit ) );
 }
 
-my $taint_enabled;
+# Exposed for Testing Purposes only.
+$Test::WithTaint::_INTERNAL_::TAINT_ENABLED =
+  $Test::WithTaint::_INTERNAL_::TAINT_ENABLED;
+
+# Variable for testing purposes, setting it to a false
+# value will force using eval to check for taint instead of using ${^TAINT}
+
+$Test::WithTaint::_INTERNAL_::USE_CTRL_TAINT = ( $] >= 5.008000 )
+  unless defined $Test::WithTaint::_INTERNAL_::USE_CTRL_TAINT;
 
 sub taint_enabled {
-    return $taint_enabled if defined $taint_enabled;
+    return $Test::WithTaint::_INTERNAL_::TAINT_ENABLED
+      if defined $Test::WithTaint::_INTERNAL_::TAINT_ENABLED;
 
     # Note: TAINT is a tristate, -1 is -t , so we only indicate 1 if its 1
     # and 0 otherwise. "Taint warnings" are not interesting to us.
-    return ( $taint_enabled = ( 1 == ${^TAINT} ) ) if $] >= 5.008000;
+    return ( $Test::WithTaint::_INTERNAL_::TAINT_ENABLED = ( 1 == ${^TAINT} ) )
+      if $Test::WithTaint::_INTERNAL_::USE_CTRL_TAINT;
 
     local $@ = undef;
     ## no critic (ErrorHandling::RequireCheckingReturnValueOfEval)
     eval {
-        $taint_enabled = 1;
+        $Test::WithTaint::_INTERNAL_::TAINT_ENABLED = 1;
         eval q[#] . substr $0, 0, 0;
-        $taint_enabled = ( !1 );
+        $Test::WithTaint::_INTERNAL_::TAINT_ENABLED = ( !1 );
     };
-    return $taint_enabled;
+    return $Test::WithTaint::_INTERNAL_::TAINT_ENABLED;
 
 }
 

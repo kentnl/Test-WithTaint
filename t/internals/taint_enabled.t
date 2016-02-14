@@ -22,6 +22,17 @@ if ( not Test::WithTaint::taint_supported ) {
         'Caching mechanism remembers value'
     );
 }
+
+# This test makes sure the code path that will only normally execute on 5.6
+# doesn't have any bugs in it
+#
+{
+    my $taint_enabled = Test::WithTaint::taint_enabled;
+    local $Test::WithTaint::_INTERNAL_::USE_CTRL_TAINT = "";
+    local $Test::WithTaint::_INTERNAL_::TAINT_ENABLED  = undef;
+    is( Test::WithTaint::taint_enabled,
+        $taint_enabled, "Forced computed value is the same normal" );
+}
 {
     my $exit = do {
         local $?;
