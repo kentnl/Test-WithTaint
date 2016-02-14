@@ -96,8 +96,7 @@ sub taint_supported {
 # - Under a perl where Taint is silently disabled, exit should be 1
 #   as the outer eval should not fail
 # - Under a perl where -T causes an error, exit should be a value other than 42
-    system(
-        _detaint( _perl_path() ) => $Test::WithTaint::_INTERNAL_::TAINT_FLAG,
+    system( $^X => $Test::WithTaint::_INTERNAL_::TAINT_FLAG,
         '-e' => q[eval{eval q[#] . substr $0,0,0;exit 1};exit 42],
     );
     my $exit = $? >> 8;
@@ -140,8 +139,6 @@ sub _exit_skipall {
       or die "Error writing to STDOUT, $!";
     exit 0;
 }
-sub _perl_path { $^X }
-sub _detaint   { $_[0] =~ /\A(.*)\z/ }
 1;
 
 __END__
