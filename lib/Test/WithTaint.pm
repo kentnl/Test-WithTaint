@@ -19,8 +19,7 @@ sub import {
 }
 
 sub _withtaint {
-    my ( undef, $file, $caller ) = @_;    ## no critic (Variables)
-
+    my ( undef, $file, $caller ) = @_;
     return if taint_enabled() and $file eq $caller;
 
     _exec_tainted($file) if taint_supported();
