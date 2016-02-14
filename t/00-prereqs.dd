@@ -1,0 +1,103 @@
+{
+  "CPAN::Meta::Converter" => {
+    0 => "develop.requires"
+  },
+  "CPAN::Meta::Prereqs" => {
+    0 => "develop.requires"
+  },
+  Carp => {
+    0 => "develop.requires"
+  },
+  Config => {
+    0 => "develop.requires | runtime.requires | test.requires"
+  },
+  "Data::Dumper" => {
+    0 => "develop.requires"
+  },
+  Exporter => {
+    0 => "develop.requires"
+  },
+  "ExtUtils::MM" => {
+    0 => "develop.requires"
+  },
+  "ExtUtils::MakeMaker" => {
+    0 => "develop.requires | test.requires"
+  },
+  "ExtUtils::Manifest" => {
+    0 => "develop.requires"
+  },
+  "File::Find" => {
+    0 => "develop.requires"
+  },
+  "File::Path" => {
+    0 => "develop.requires"
+  },
+  "File::Spec" => {
+    0 => "develop.requires | runtime.requires | test.requires"
+  },
+  "File::Temp" => {
+    0 => "develop.requires"
+  },
+  "Getopt::Long" => {
+    0 => "develop.requires"
+  },
+  "Module::CPANfile" => {
+    0 => "develop.requires"
+  },
+  "Module::Metadata" => {
+    0 => "develop.requires"
+  },
+  PIR => {
+    0 => "develop.requires"
+  },
+  "Path::Tiny" => {
+    0 => "develop.requires"
+  },
+  "Perl::PrereqScanner" => {
+    0 => "develop.requires"
+  },
+  "Pod::Coverage::TrustPod" => {
+    0 => "authortest.requires"
+  },
+  "Pod::Perldoc::ToPod" => {
+    0 => "develop.requires"
+  },
+  "Test::CPAN::Changes" => {
+    0 => "releasetest.requires"
+  },
+  "Test::EOL" => {
+    0 => "authortest.requires"
+  },
+  "Test::Kwalitee" => {
+    "1.21" => "releasetest.requires"
+  },
+  "Test::More" => {
+    "0.87_01" => "test.requires",
+    "0.88" => "authortest.requires",
+    "0.96" => "releasetest.requires"
+  },
+  "Test::Perl::Critic" => {
+    0 => "authortest.requires"
+  },
+  "Test::Pod" => {
+    "1.41" => "authortest.requires"
+  },
+  "Test::Pod::Coverage" => {
+    "1.08" => "authortest.requires"
+  },
+  base => {
+    0 => "develop.requires"
+  },
+  lib => {
+    0 => "develop.requires | runtime.requires"
+  },
+  perl => {
+    "5.006" => "develop.requires | runtime.requires"
+  },
+  strict => {
+    0 => "authortest.requires | develop.requires | releasetest.requires | runtime.requires | test.requires"
+  },
+  warnings => {
+    0 => "authortest.requires | develop.requires | releasetest.requires | runtime.requires | test.requires"
+  }
+}

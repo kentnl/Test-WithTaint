@@ -97,6 +97,11 @@ my $dumper = Data::Dumper->new( [] );
 $dumper->Terse(1)->Sortkeys(1)->Indent(1)->Useqq(1)->Quotekeys(0);
 path('maint/provided.pl')->spew_raw(
     $dumper->Values(
-        [ CPAN::Meta::Converter::_dclone( $provided->{runtime} || {} ) ]
+       [ CPAN::Meta::Converter::_dclone( $provided->{runtime} || {} ) ]
     )->Dump
 );
+path('t/00-prereqs.dd')->spew_raw(
+    $dumper->Values(
+      [ CPAN::Meta::Converter::_dclone( $prereqr->prereqs_report ) ]
+    )->Dump
+)

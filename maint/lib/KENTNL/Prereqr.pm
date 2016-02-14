@@ -104,6 +104,44 @@ sub collect {
     };
 }
 
+sub prereqs_report {
+   return (
+        $_[0]->{prereqs_report} ||= do {
+            my ( $reqs, $provides ) = $_[0]->collect;
+            $reqs = $reqs->clone;
+            for my $phase ( qw( configure runtime build develop authortest releasetest smoketest test )) {
+                for my $rel (qw( requires recommends suggests )) {
+                    my $preqs = $reqs->requirements_for( $phase, $rel );
+                    for my $module ( keys %{ $provides->{$phase} } ) {
+                        if ( $preqs->accepts_module( $module, $provides->{$phase}->{$module}->{version} ) ) {
+                            $preqs->clear_requirement($module);
+                        }
+                    }
+                }
+            }
+            my $flat_reqs = {};
+
+            for my $phase ( qw( configure runtime build develop authortest releasetest smoketest test )) {
+                for my $rel (qw( requires recommends suggests )) {
+                    my $prereqs = $reqs->requirements_for( $phase, $rel )->as_string_hash;
+                    for my $module ( keys %{$prereqs} ) {
+                      $flat_reqs->{$module} ||= {};
+                      $flat_reqs->{$module}->{ $prereqs->{$module}} ||= {};
+                      $flat_reqs->{$module}->{ $prereqs->{$module} }->{ "$phase.$rel" } = 1;
+                    }
+                }
+            }
+            for my $module ( keys %{$flat_reqs} ) {
+              for my $version ( keys %{$flat_reqs->{$module}} ) {
+                $flat_reqs->{$module}->{$version} = join q[ | ], sort keys %{ $flat_reqs->{$module}->{$version} };
+              }
+            }
+
+            return $flat_reqs;
+          }
+    );
+}
+
 sub prereqs {
     return (
         $_[0]->{prereqs} ||= do {

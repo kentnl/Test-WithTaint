@@ -7,6 +7,8 @@ requires 'warnings';
 
 on test => sub {
     requires 'Config';
+    requires 'ExtUtils::MakeMaker';
+    requires 'File::Spec';
     requires 'Test::More', '0.87_01';
     requires 'strict';
     requires 'warnings';

@@ -36,7 +36,8 @@ sub _withtaint {
 
 sub _exec_tainted {
     my ($file) = @_;
-    local $ENV{PATH} = _cleanpath();
+    local $ENV{PATH}     = _cleanpath();
+    local $ENV{PERL5LIB} = _incdirs();
     my $perl = _cleanperl();
     exec {$perl} $perl, '-Ilib', '-T', $file;
     die "Could not exec $file [E<Test::WithTaint>0x03]: $!";
@@ -60,6 +61,11 @@ sub _cleanpath {
             $ENV{PATH},
         ) =~ /\A(.+)\z/
     )[0];    # DETAINTING
+}
+
+sub _incdirs {
+    require Config;
+    join( $Config::Config{path_sep}, @INC );
 }
 
 sub _libdirs {
