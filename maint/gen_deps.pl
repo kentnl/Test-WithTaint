@@ -59,7 +59,7 @@ my $prereqr = KENTNL::Prereqr->new(
         {
             rule        => PIR->new->perl_module,
             start_in    => ['t'],
-            provides_to => ['test'],
+            provides_to => [ 'test', 'develop' ],
         }
     ]
 );

@@ -7,6 +7,12 @@ use Test::More;
 
 use Test::WithTaint ();
 
+BEGIN {
+    local @INC = ( 't/lib', @INC );
+    require KENTNL::PoliteWait;
+    KENTNL::PoliteWait->import();
+}
+
 # Here lies a different mechanism to compute taint support that pokes into different
 # perl guts and relies much on understanding what the world of perl looks like.
 #
@@ -118,23 +124,5 @@ if ($full_diag) {
     }
     maybe_sleep(10);
 }
-
-sub maybe_sleep {
-    my ($size) = @_;
-
-    # in order to do the pause thing:
-    # - users must be able to give input in their terminal
-    return unless -t STDIN;
-
-    # - users must have a terminal for stdout
-    # and -p must be supported for "prove"
-    return unless ( -t STDOUT || -p STDOUT );
-
-    # Note: Other implementations sleep in other conditions... for some reason.
-    # we still print regardless, but we don't sleep, so who cares.
-    diag "[ Sleeping for $size Seconds ]";
-    return sleep $size;
-}
-
 done_testing;
 
