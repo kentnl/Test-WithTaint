@@ -10,51 +10,30 @@ our $AUTHORITY = 'cpan:KENTNL';
 sub import {
     my ( $self, @args ) = @_;
     if ( not @args ) {
-        return $self->_withtaint_self( [caller]->[1] );
+        return $self->_withtaint( ( [caller]->[1] ) x 2 );
     }
     if ( 2 == @args and '-exec' eq $args[0] ) {
-        return $self->_withtaint_other( $args[1], [caller]->[1] );
+        return $self->_withtaint( $args[1], [caller]->[1] );
     }
     die 'Unrecognized arguments to import() [E<Test::WithTaint>0x01]';
 }
 
-sub _withtaint_self {
-    my ( undef, $file ) = @_;    ## no critic (Variables)
-
-    # We're after the re-spawn so noop.
-    if ( taint_enabled() ) {
-        return;
-    }
-
-    _exec_tainted($file) if taint_supported();
-
-    return _exit_skipall(
-        'Taint Support required for this test [W<Test::WithTaint>0x04]');
-}
-
-sub _withtaint_other {
+sub _withtaint {
     my ( undef, $file, $caller ) = @_;    ## no critic (Variables)
 
-    # -exec => $0 gives the wrong results
-    #             because no code is expected to run after an -exec =>
-    if ( taint_enabled() and $file eq $caller ) {
-        warn 'Circular -exec found, assuming continuation expected'
-          . ' [W<Test::WithTaint>0x06]';
-
-        return;
-    }
+    return if taint_enabled() and $file eq $caller;
 
     _exec_tainted($file) if taint_supported();
 
     return _exit_skipall(
-        'Taint Support required for this test [W<Test::WithTaint>0x05]');
+        'Taint Support required for this test [W<Test::WithTaint>0x02]');
 
 }
 
 sub _exec_tainted {
     my ($file) = @_;
     exec {$^X} $^X, '-Ilib', '-T', $file;
-    die "Could not exec $file [E<Test::WithTaint>0x06]: $!";
+    die "Could not exec $file [E<Test::WithTaint>0x03]: $!";
 }
 
 # these are not documented externally on purpose
